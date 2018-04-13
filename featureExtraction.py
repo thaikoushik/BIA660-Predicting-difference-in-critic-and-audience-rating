@@ -65,7 +65,6 @@ def getMovieInformation(contentInfo, movieDetails):
     movieInfoListContainer = contentInfo.find("ul",{"class":"content-meta info"})
     for eachInfoList in movieInfoListContainer.find_all("li",{}):
         movieDetails[eachInfoList.find("div",{"class":"meta-label subtle"}).text.strip()[:-1]] = eachInfoList.find("div",{"class":"meta-value"}).text.strip()
-        #print(eachInfoList.find("div",{"class":"meta-value"}).text.strip())
     return movieDetails
 
 # Method to get the Cast information for the movie
@@ -110,9 +109,9 @@ def getMovieName(movieNameContainer, movieDetails):
 path = "New Folder/PROJHTML/"
 files = glob.glob(path)
 i=0;
- 
+
 for infile in glob.glob( os.path.join(path, '*.html') ):
-    file_exists = os.path.isfile('output2.csv')
+    file_exists = os.path.isfile('outputdumb.csv')
     f = open("error.txt","w+")
     print(infile)
     i+=1 
@@ -146,16 +145,26 @@ for infile in glob.glob( os.path.join(path, '*.html') ):
         movieDetails = getAudienceReviewInfo(audienceReviewInfo, movieDetails)
         # A dictionary(movieDetails) contains all the information for the movie present in the page
         print(i)
+        
+        # Removing the last word from the In Theaters field if exists otherwise assigning null
         if not movieDetails.get('In Theaters',None):
             movieDetails['In Theaters'] = ""
         else:
             inTheaters = movieDetails['In Theaters'].split("\n")
             movieDetails['In Theaters'] = inTheaters[0].strip() 
+        
+        # Removing the $ symbol fromt he Box Office if exists otherwise assigning null
+        if not movieDetails.get('Box Office',None):
+            movieDetails['Box Office'] = ""
+        else:
+            boxOffice = movieDetails['Box Office'].replace('$',"")
+            print(boxOffice)
+            movieDetails['Box Office'] = boxOffice
+    
         file.close()
-        with open('output2.csv', 'a') as csvfile:
-            headers = ['Movie Name', 'Fresh', 'In Theaters','Runtime','Studio','tomatoMeter', 'criticConsensus','audience - User Ratings','actors','Average Rating','Genre','Written By','synopsis','Reviews Counted','criticRating','audience - Average Rating','criticReviews','audienceMeter','Rotten','topAudienceReviews','Rating','Directed By','On Disc/Streaming']
+        with open('outputdumb.csv', 'a') as csvfile:
+            headers = ['Movie Name', 'Fresh','Box Office', 'In Theaters','Runtime','Studio','tomatoMeter', 'criticConsensus','audience - User Ratings','actors','Average Rating','Genre','Written By','synopsis','Reviews Counted','criticRating','audience - Average Rating','criticReviews','audienceMeter','Rotten','topAudienceReviews','Rating','Directed By','On Disc/Streaming']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n',fieldnames=headers)
             if not file_exists:
                 writer.writeheader() 
-            #writer.writeheader()
-            writer.writerow({'Movie Name':movieDetails.get('movieName',""),'Fresh':movieDetails.get('Fresh',""),'Runtime':movieDetails.get('Runtime',""),'Studio':movieDetails.get('Studio',""),'tomatoMeter':movieDetails.get('tomatoMeter',""),'criticConsensus':movieDetails.get('criticConsensus',""),'audience - User Ratings':movieDetails.get('audience - User Ratings:',""),'actors':movieDetails.get('actors',""),'Average Rating':movieDetails.get('Average Rating',""),'Genre':movieDetails.get('Genre',""),'Written By':movieDetails.get('Written By',""),'In Theaters':movieDetails.get('In Theaters',""),'synopsis':movieDetails.get('synopsis',""),'Reviews Counted':movieDetails.get('Reviews Counted',""), 'criticRating':movieDetails.get('criticRating',""),'audience - Average Rating':movieDetails.get('audience - Average Rating:',""),'criticReviews':movieDetails.get('criticReviews',""), 'audienceMeter':movieDetails.get('audienceMeter',""),'Rotten':movieDetails.get('Rotten',""),'topAudienceReviews':movieDetails.get('topAudienceReviews',""),'Rating':movieDetails.get('Rating',""),'Directed By':movieDetails.get('Directed By',""),'On Disc/Streaming':movieDetails.get('On Disc/Streaming',"") })
+            writer.writerow({'Movie Name':movieDetails.get('movieName',""),'Box Office':movieDetails.get('Box Office',""), 'Fresh':movieDetails.get('Fresh',""),'Runtime':movieDetails.get('Runtime',""),'Studio':movieDetails.get('Studio',""),'tomatoMeter':movieDetails.get('tomatoMeter',""),'criticConsensus':movieDetails.get('criticConsensus',""),'audience - User Ratings':movieDetails.get('audience - User Ratings:',""),'actors':movieDetails.get('actors',""),'Average Rating':movieDetails.get('Average Rating',""),'Genre':movieDetails.get('Genre',""),'Written By':movieDetails.get('Written By',""),'In Theaters':movieDetails.get('In Theaters',""),'synopsis':movieDetails.get('synopsis',""),'Reviews Counted':movieDetails.get('Reviews Counted',""), 'criticRating':movieDetails.get('criticRating',""),'audience - Average Rating':movieDetails.get('audience - Average Rating:',""),'criticReviews':movieDetails.get('criticReviews',""), 'audienceMeter':movieDetails.get('audienceMeter',""),'Rotten':movieDetails.get('Rotten',""),'topAudienceReviews':movieDetails.get('topAudienceReviews',""),'Rating':movieDetails.get('Rating',""),'Directed By':movieDetails.get('Directed By',""),'On Disc/Streaming':movieDetails.get('On Disc/Streaming',"") })
